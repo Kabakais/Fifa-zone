@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar">  
+<head>  
+  <meta charset="UTF-8">  
+  <title>comparison</title>  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">   
+  <style>  
+    * {  
+      -webkit-user-select: none;  
+      -moz-user-select: none;  
+      -ms-user-select: none;  
+      user-select: none;  
+      -webkit-tap-highlight-color: transparent;  
+    }  
+
+    body {  
+      margin: 0;  
+      padding: 0;  
+      background: black;  
+      display: flex;  
+      flex-direction: column;  
+      justify-content: center;  
+      align-items: center;  
+      min-height: 100vh;  
+      overflow: hidden;  
+      color: white;  
+    }  
+
+    .container {  
+      position: relative;  
+      display: inline-block;  
+    }  
+
+    .main-image {  
+      display: block;  
+      max-width: 100%;  
+      max-height: 100vh;  
+    }  
+
+    .logo {  
+      position: absolute;  
+      width: 80px;  /* الحجم الأصلي */  
+      height: auto;  
+      cursor: pointer;  
+    }  
+
+    .logo1 {  
+      top: 48%;  
+      left: 20%;  
+      transform: translate(-50%, -50%);  
+    }  
+
+    .logo2 {  
+      top: 48%;  
+      right: 20%;  
+      transform: translate(50%, -50%);  
+    }  
+
+    #fileInput {  
+      display: none;  
+    }  
+
+    .download-btn {  
+      margin-top: 20px;  
+      padding: 12px 25px;  
+      background: #e60000;  
+      color: white;  
+      border: none;  
+      border-radius: 12px;  
+      cursor: pointer;  
+      font-size: 18px;  
+      font-weight: bold;  
+      transition: 0.3s;  
+    }  
+
+    .download-btn:hover {  
+      background: #ff3333;  
+      transform: scale(1.05);  
+    }  
+  </style>  
+</head>  
+<body>  
+  <div class="container">  
+    <!-- صورتك -->  
+    <img id="mainImage" src="Picsart_25-09-19_18-19-16-809.jpg" alt="الصورة" class="main-image">  
+
+    <!-- لوجو فوق الجامد -->  
+    <img id="logo1" src="logo.png" alt="لوجو" class="logo logo1" onclick="openGallery('logo1')">  
+
+    <!-- لوجو فوق الأجمد -->  
+    <img id="logo2" src="logo.png" alt="لوجو" class="logo logo2" onclick="openGallery('logo2')">  
+
+    <!-- رفع صورة -->  
+    <input type="file" id="fileInput" accept="image/*" onchange="changeLogo(event)">  
+  </div>  
+
+  <!-- زر التحميل -->  
+  <button class="download-btn" onclick="downloadImage()">📥 تحميل الصورة</button>  
+
+  <script>  
+    let currentLogo = null;  
+
+    function openGallery(logoId) {  
+      currentLogo = logoId;  
+      document.getElementById('fileInput').click();  
+    }  
+
+    function changeLogo(event) {  
+      const file = event.target.files[0];  
+      if (file && currentLogo) {  
+        const reader = new FileReader();  
+        reader.onload = function(e) {  
+          document.getElementById(currentLogo).src = e.target.result;  
+        };  
+        reader.readAsDataURL(file);  
+      }  
+    }  
+
+    function downloadImage() {  
+      const mainImg = document.getElementById("mainImage");  
+      const logo1 = document.getElementById("logo1");  
+      const logo2 = document.getElementById("logo2");  
+
+      const canvas = document.createElement("canvas");  
+      const ctx = canvas.getContext("2d");  
+
+      // حجم 4K ثابت  
+      canvas.width = 6000;  
+      canvas.height = 4000;  
+
+      const img = new Image();  
+      img.crossOrigin = "anonymous";  
+      img.src = mainImg.src;  
+      img.onload = () => {  
+        // نرسم الصورة الأساسية  
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);  
+
+        // نضيف اللوجو 1  
+        const l1 = new Image();  
+        l1.crossOrigin = "anonymous";  
+        l1.src = logo1.src;  
+        l1.onload = () => {  
+          const x1 = canvas.width * 0.2 - 40;  
+          const y1 = canvas.height * 0.48 - 40;  
+          ctx.drawImage(l1, x1, y1, 80, 80);  
+
+          // نضيف اللوجو 2  
+          const l2 = new Image();  
+          l2.crossOrigin = "anonymous";  
+          l2.src = logo2.src;  
+          l2.onload = () => {  
+            const x2 = canvas.width * 0.8 - 40;  
+            const y2 = canvas.height * 0.48 - 40;  
+            ctx.drawImage(l2, x2, y2, 80, 80);  
+
+            // تحميل الصورة النهائية  
+            const link = document.createElement("a");  
+            link.download = "final-image-4k.png";  
+            link.href = canvas.toDataURL("image/png");  
+            link.click();  
+          };  
+        };  
+      };  
+    }  
+  </script>  
+</body>  
+</html>
